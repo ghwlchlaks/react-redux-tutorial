@@ -12,6 +12,22 @@ export default class Authentication extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+  }
+
+  handleLogin() {
+    let id = this.state.username;
+    let pw = this.state.password;
+
+    // login 컴포넌트에서 전달받은 메소드
+    this.props.onLogin(id, pw).then(success => {
+      // 로그인 실패시 패스워드초기화
+      if (!success) {
+        this.setState({
+          password: ''
+        });
+      }
+    });
   }
 
   handleChange(e) {
@@ -51,7 +67,12 @@ export default class Authentication extends Component {
         <div className="card-content">
           <div className="row">
             {inputBoxes}
-            <a className="waves-effect waves-light btn">SUBMIT</a>
+            <a
+              className="waves-effect waves-light btn"
+              onClick={this.handleLogin}
+            >
+              SUBMIT
+            </a>
           </div>
         </div>
 
