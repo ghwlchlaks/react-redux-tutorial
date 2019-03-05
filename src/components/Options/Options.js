@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+// input값을 변경했을떄 발생하는 action을 가져옵니다.
 import { setDiff } from "../../actions";
 
 class Option extends React.Component {
@@ -25,6 +26,7 @@ class Option extends React.Component {
     );
   }
 
+  //값이 변경될때 발생하는 이벤트
   onChangeDiff(e) {
     if (isNaN(e.target.value)) return;
 
@@ -34,6 +36,7 @@ class Option extends React.Component {
       this.setState({ diff: "0" });
     }
 
+    // mapDispatchToProps와 매핑된 onUpdateDiff를 통하여 새로운값을 dispatch합니다.
     this.props.onUpdateDiff(parseInt(e.target.value));
   }
 }
