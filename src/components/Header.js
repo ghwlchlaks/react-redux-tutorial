@@ -6,7 +6,7 @@ export default class Header extends Component {
   render() {
     const loginButton = (
       <li>
-        <Link to="/">
+        <Link to="/login">
           <i className="material-icons">vpn_key</i>
         </Link>
       </li>
