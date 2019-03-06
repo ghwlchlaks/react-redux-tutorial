@@ -44,6 +44,7 @@ class Login extends Component {
   }
 }
 
+// 전달받은 state
 const mapStateToProps = state => {
   return {
     status: state.authentication.login.status

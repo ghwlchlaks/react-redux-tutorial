@@ -13,6 +13,21 @@ export default class Authentication extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleRegister = this.handleRegister.bind(this);
+  }
+
+  handleRegister() {
+    let id = this.state.username;
+    let pw = this.state.password;
+
+    this.props.onRegister(id, pw).then(result => {
+      if (!result) {
+        this.setState({
+          username: '',
+          password: ''
+        });
+      }
+    });
   }
 
   handleLogin() {
@@ -90,7 +105,12 @@ export default class Authentication extends Component {
       <div className="card-content">
         <div className="row">
           {inputBoxes}
-          <a className="waves-effect waves-light btn">CREATE</a>
+          <a
+            className="waves-effect waves-light btn"
+            onClick={this.handleRegister}
+          >
+            CREATE
+          </a>
         </div>
       </div>
     );
