@@ -1,15 +1,47 @@
 const express = require('express');
 const path = require('path');
+const os = require('os');
+const session = require('express-session');
+const connectRedis = require('connect-redis');
+const redisStore = connectRedis(session);
 
-const app = express();
-const port = 4000;
+// controller files
+const { authRoute } = require('./contollers/index');
 
-app.use('/', express.static(path.join(__dirname, './../public')));
+// config files
+const { redis, mongoose } = require('./config/index');
 
-app.get('/hello', (req, res) => {
-  return res.send('Hello CodeLab');
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'db connection error'));
+db.once('open', () => {
+  console.log('mongoose connection!');
 });
 
-app.listen(port, () => {
-  console.log('Express is listening on port', port);
+const app = express();
+const PORT = 4000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, './../public')));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true,
+    secret: 'session',
+    cookie: { maxAge: 1000 * 60 * 5 }, // 유효시간 10분
+    store: new redisStore({
+      client: redis
+    })
+  })
+);
+
+app.use('/api/auth', authRoute);
+
+// api test route
+app.get('/api/getUsername', function(req, res, next) {
+  res.send({ username: os.userInfo().username });
+});
+
+app.listen(PORT, () => {
+  console.log('Express is listening on port', PORT);
 });
