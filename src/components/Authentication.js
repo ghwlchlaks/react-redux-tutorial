@@ -14,6 +14,19 @@ export default class Authentication extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.handleRegister = this.handleRegister.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  //엔터 이벤트 추가
+  handleKeyPress(e) {
+    if (e.charCode === 13) {
+      // mode가 true = login모드일때
+      if (this.props.mode) {
+        this.handleLogin();
+      } else {
+        this.handleRegister();
+      }
+    }
   }
 
   handleRegister() {
@@ -72,6 +85,7 @@ export default class Authentication extends Component {
             className="validate"
             onChange={this.handleChange}
             value={this.state.password}
+            onKeyPress={this.handleKeyPress}
           />
         </div>
       </div>
