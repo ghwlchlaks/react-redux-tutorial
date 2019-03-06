@@ -1,11 +1,31 @@
 import React, { Component } from 'react';
 import { Header } from '../components';
 import { connect } from 'react-redux';
-import { getStatusRequest } from '../actions/authentication';
+import { getStatusRequest, logoutRequest } from '../actions/authentication';
 const $ = window.$;
 const Materialize = window.Materialize;
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  handleLogout() {
+    this.props.logoutRequest().then(() => {
+      Materialize.toast('Good Bye!', 2000);
+    });
+
+    // 쿠키 세션 만료 처리
+    const loginData = {
+      isLoggedIn: false,
+      username: ''
+    };
+
+    document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+  }
+
   componentDidMount() {
     // 세션 확인 기능
     function getCookie(name) {
@@ -65,7 +85,10 @@ class App extends Component {
         {isAuth ? (
           undefined
         ) : (
-          <Header isLoggedIn={this.props.status.isLoggedIn} />
+          <Header
+            isLoggedIn={this.props.status.isLoggedIn}
+            onLogout={this.handleLogout}
+          />
         )}
         {this.props.children}
       </div>
@@ -83,6 +106,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getStatusRequest: () => {
       return dispatch(getStatusRequest());
+    },
+    logoutRequest: () => {
+      return dispatch(logoutRequest());
     }
   };
 };
