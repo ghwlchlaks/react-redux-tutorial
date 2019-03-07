@@ -21,7 +21,7 @@ class Login extends Component {
           username: id
         };
 
-        document.cookie = 'keys=' + btoa(JSON.stringify(loginData));
+        document.cookie = 'key=' + btoa(JSON.stringify(loginData));
         Materialize.toast('Welcome, ' + id, 2000);
         this.props.history.push('/');
         return true;

@@ -24,7 +24,7 @@ export function loginRequest(username, password) {
     dispatch(login());
 
     return axios
-      .post('/api/account/signin', { username, password })
+      .post('/api/auth/signin', { username, password })
       .then(response => {
         // 성공
         // thunk내부에서 다른 action을 dispatch할 수 있음.
@@ -64,7 +64,7 @@ export function registerRequest(username, password) {
     dispatch(register());
 
     return axios
-      .post('/api/account/signup', { username, password })
+      .post('/api/auth/signup', { username, password })
       .then(reponse => {
         dispatch(registerSuccess());
       })
@@ -101,7 +101,7 @@ export function getStatusRequest() {
     dispatch(getStatus());
 
     return axios
-      .get('/api/account/getInfo')
+      .get('/api/auth/getInfo')
       .then(response => {
         dispatch(getStatusSuccess(response.data.info.username));
       })
@@ -136,7 +136,7 @@ export function getStatusFailure() {
 
 export function logoutRequest() {
   return dispatch => {
-    return axios.post('/api/account/logout').then(response => {
+    return axios.post('/api/auth/logout').then(response => {
       dispatch(logout());
     });
   };

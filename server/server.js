@@ -4,6 +4,7 @@ const os = require('os');
 const session = require('express-session');
 const connectRedis = require('connect-redis');
 const redisStore = connectRedis(session);
+const logger = require('morgan');
 
 // controller files
 const { authRoute } = require('./contollers/index');
@@ -20,6 +21,7 @@ db.once('open', () => {
 const app = express();
 const PORT = 4000;
 
+app.use(logger('short'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, './../public')));
@@ -44,4 +46,10 @@ app.get('/api/getUsername', function(req, res, next) {
 
 app.listen(PORT, () => {
   console.log('Express is listening on port', PORT);
+});
+
+// error handler
+app.use(function(err, req, res) {
+  console.error(err.stack);
+  res.status(500).send('something broke!');
 });

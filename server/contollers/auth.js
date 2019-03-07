@@ -94,12 +94,29 @@ router.post('/signin', (req, res) => {
   });
 });
 
+/**
+ * 로그인 검사
+ * 만약 새로고침을 해서 어플리케이션을 처음부터 다시 렌더링하게 될 때 가지고있는 쿠키가 유효한건지 체크하기위함.
+ */
 router.get('/getInfo', (req, res) => {
-  res.send({ info: null });
+  if (typeof req.session.loginInfo === 'undefined') {
+    return res.status(401).send({
+      error: 1
+    });
+  }
+
+  res.send({ info: req.session.loginInfo });
 });
 
+/**
+ * 로그아웃
+ * 세션 소멸
+ */
 router.post('/logout', (req, res) => {
-  res.send({ success: true });
+  req.session.destroy(err => {
+    if (err) throw err;
+    return res.send({ success: true });
+  });
 });
 
 module.exports = router;

@@ -49,7 +49,9 @@ export default function authentication(state, action) {
     });
   case types.AUTH_LOGIN_FAILURE:
     return update(state, {
-      login: { $set: 'FAILURE' }
+      login: {
+        status: { $set: 'FAILURE' }
+      }
     });
   case types.AUTH_REGISTER:
     return update(state, {

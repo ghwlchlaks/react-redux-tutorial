@@ -56,7 +56,7 @@ class App extends Component {
     }
 
     this.props.getStatusRequest().then(() => {
-      console.log(this.props.status);
+      // console.log(this.props.status);
 
       // 서버 세션 검사 결과 false일때
       if (!this.props.status.valid) {
@@ -65,14 +65,14 @@ class App extends Component {
           isLoggedIn: false,
           username: ''
         };
+
+        document.cookie = 'key=' + btoa(JSON.stringify(loginData));
+
+        let $toastContent = $(
+          '<span style="color: #FFB4BA">Your session is expired, please log in again</span>'
+        );
+        Materialize.toast($toastContent, 4000);
       }
-
-      document.cookie = 'key=' + btoa(JSON.stringify(loginData));
-
-      let $toastContent = $(
-        '<span style="color: #FFB4BA">Your session is expired, please log in again</span>'
-      );
-      Materialize.toast($toastContent, 4000);
     });
   }
 
