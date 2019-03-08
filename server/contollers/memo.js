@@ -40,9 +40,19 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {});
 
 //delete memo
-router.delete('/:id', (req, res) => {});
+router.delete('/:id', (req, res) => {
+  // check memo id valid
+});
 
 //get memo list
-router.get('/', (req, res) => {});
+router.get('/', (req, res) => {
+  Memo.find()
+    .sort({ _id: -1 })
+    .limit(6)
+    .exec((err, memos) => {
+      if (err) throw err;
+      res.send({ memos: memos });
+    });
+});
 
 module.exports = router;
