@@ -1,5 +1,7 @@
 const authRoute = require('./auth');
+const memoRoute = require('./memo');
 
 module.exports = {
-  authRoute: authRoute
+  authRoute: authRoute,
+  memoRoute: memoRoute
 };

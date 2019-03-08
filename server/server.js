@@ -7,7 +7,7 @@ const redisStore = connectRedis(session);
 const logger = require('morgan');
 
 // controller files
-const { authRoute } = require('./contollers/index');
+const { authRoute, memoRoute } = require('./contollers/index');
 
 // config files
 const { redis, mongoose } = require('./config/index');
@@ -38,6 +38,7 @@ app.use(
 );
 
 app.use('/api/auth', authRoute);
+app.use('/api/memo', memoRoute);
 
 // api test route
 app.get('/api/getUsername', function(req, res, next) {
