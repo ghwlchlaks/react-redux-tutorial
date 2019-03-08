@@ -38,7 +38,65 @@ router.post('/', (req, res) => {
 });
 
 // modify memo
-router.put('/:id', (req, res) => {});
+router.put('/:id', (req, res) => {
+  const id = req.params.id;
+  const contents = req.body.contents;
+  const loginInfo = req.session.loginInfo;
+
+  // check memo id valid
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send({
+      error: 'invalid id',
+      code: 1
+    });
+  }
+
+  // check contents valid
+  if (typeof contents !== 'string' || contents === '') {
+    return res.status(400).send({
+      error: 'empty contents',
+      code: 2
+    });
+  }
+
+  //check login
+  if (typeof loginInfo === 'undefined') {
+    return res.status(403).send({
+      error: 'not logged in',
+      code: 3
+    });
+  }
+
+  // find memo
+  Memo.findById(id, (err, memo) => {
+    if (err) throw err;
+    if (!memo) {
+      return res.status(404).send({
+        error: 'no resource',
+        code: 4
+      });
+    }
+
+    if (memo.writer !== loginInfo.username) {
+      return res.status(403).send({
+        error: 'permission failure',
+        code: 5
+      });
+    }
+
+    memo.contents = contents;
+    memo.date.edited = new Date();
+    memo.is_edited = true;
+
+    memo.save((err, memo) => {
+      if (err) throw err;
+      return res.send({
+        success: true,
+        memo
+      });
+    });
+  });
+});
 
 //delete memo
 router.delete('/:id', (req, res) => {
