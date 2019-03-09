@@ -47,8 +47,17 @@ export function memoListRequest(isInitial, listType, id, username) {
   return dispatch => {
     dispatch(memoList());
 
+    let url = '/api/memo';
+
+    if (typeof username === 'undefined') {
+      // 유저네임이 없다면 공통 메모 load
+      url = isInitial ? url : `${url}/${listType}/${id}`;
+    } else {
+      // 특정 유저의 메모 가져오기 url
+    }
+
     return axios
-      .get('/api/memo')
+      .get(url)
       .then(response => {
         dispatch(memoListSuccess(response.data, isInitial, listType));
       })
