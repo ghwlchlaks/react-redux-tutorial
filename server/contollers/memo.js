@@ -150,8 +150,51 @@ router.get('/', (req, res) => {
     .limit(6)
     .exec((err, memos) => {
       if (err) throw err;
-      res.send({ memos: memos });
+      res.json(memos);
     });
+});
+
+router.get('/:listType/:id', (req, res) => {
+  let listType = req.params.listType;
+  let id = req.params.id;
+
+  // check list type valid
+  if (listType !== 'old' && listType !== 'new') {
+    return res.status(400).send({
+      error: 'invalid listtype',
+      code: 1
+    });
+  }
+
+  // check memo id vaild
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send({
+      error: 'invaild id',
+      code: 2
+    });
+  }
+
+  let objId = new mongoose.Types.ObjectId(id);
+
+  if (listType === 'new') {
+    // get new memo
+    Memo.find({ _id: { $gt: objId } })
+      .sort({ _id: -1 })
+      .limit(6)
+      .exec((err, memos) => {
+        if (err) throw err;
+        return res.json(memos);
+      });
+  } else {
+    // get older memo
+    Memo.find({ _id: { $lt: objId } })
+      .sort({ _id: -1 })
+      .limit(6)
+      .exec((err, memos) => {
+        if (err) throw err;
+        return res.json(memos);
+      });
+  }
 });
 
 module.exports = router;
