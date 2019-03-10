@@ -52,7 +52,10 @@ class Home extends Component {
   handlePost(contents) {
     return this.props.memoPostRequest(contents).then(() => {
       if (this.props.postStatus.status === 'SUCCESS') {
-        Materialize.toast('Success!', 2000);
+        // tigger new memo
+        this.loadNewMemo().then(() => {
+          Materialize.toast('Success!', 2000);
+        })
       } else {
         /**
          * 1: not logged in
