@@ -4,6 +4,43 @@ import TimeAgo from 'react-timeago';
 const $ = window.$;
 
 export default class Memo extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      editMode: false,
+      value: props.data.contents
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.toggleEdit = this.toggleEdit.bind(this);
+  }
+
+  handleChange(e) {
+    this.setState({
+      value: e.target.value
+    })
+  }
+
+  toggleEdit() {
+
+    if(this.state.editMode) {
+      let id =this.props.data._id;
+      let index= this.props.index;
+      let contents = this.state.value;
+
+      this.props.onEdit(id, index, contents).then(() => {
+        this.setState({
+          editMode: !this.state.editMode
+        })
+      })
+    } else {
+      this.setState({
+        editMode: !this.state.editMode
+      })
+    }
+  }
+
   componentDidMount() {
     $('#dropdown-button-' + this.props.data._id).dropdown({
       belowOrigin: true
@@ -18,6 +55,10 @@ export default class Memo extends Component {
   render() {
     const { data, ownership } = this.props;
 
+    const editedInfo = (
+      <span style={{color: '#AAB5BC'}}> · Edited <TimeAgo date={this.props.data.date.edited} live={true}/></span>
+    )
+
     const dropDownMenu = (
       <div className="option-button">
         <a
@@ -29,7 +70,7 @@ export default class Memo extends Component {
         </a>
         <ul id={`dropdown-${data._id}`} className="dropdown-content">
           <li>
-            <a>Edit</a>
+            <a onClick={this.toggleEdit}>Edit</a>
           </li>
           <li>
             <a>Remove</a>
@@ -42,15 +83,32 @@ export default class Memo extends Component {
         <div className="info">
           <a className="username">{data.writer}</a> wrote a log ·{' '}
           <TimeAgo date={data.date.created} />
+          {data.is_edited ? editedInfo : undefined}
           {ownership ? dropDownMenu : undefined}
         </div>
       </div>
     );
 
+    const editView = (
+      <div className="write">
+      <div className="card">
+          <div className="card-content">
+              <textarea
+                  className="materialize-textarea"
+                  value={this.state.value}
+                  onChange={this.handleChange}></textarea>
+          </div>
+          <div className="card-action">
+              <a onClick={this.toggleEdit}>OK</a>
+          </div>
+      </div>
+  </div>
+    )
+
     return (
       <div className="container memo">
         <div className="card">
-          {memoView}
+          {this.state.editMode ? editView : memoView}
           <div className="card-content">{data.contents}</div>
           <div className="footer">
             <i className="material-icons log-footer-icon star icon-button">
@@ -66,7 +124,9 @@ export default class Memo extends Component {
 
 Memo.propTypes = {
   data: PropTypes.object,
-  ownership: PropTypes.bool
+  ownership: PropTypes.bool,
+  onEdit: PropTypes.func,
+  index: PropTypes.number
 };
 
 Memo.defaultProps = {
@@ -81,5 +141,9 @@ Memo.defaultProps = {
     },
     starred: []
   },
-  ownership: true
+  ownership: true,
+  onEdit: (id, index, contents) => {
+    console.error('onEdit function not defined')
+  },
+  index: -1
 };

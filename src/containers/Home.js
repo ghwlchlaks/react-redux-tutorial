@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Write, MemoList } from '../components';
-import { memoPostRequest, memoListRequest } from '../actions/memo';
+import { memoPostRequest, memoListRequest, memoEditRequest } from '../actions/memo';
 
 const $ = window.$;
 const Materialize = window.Materialize;
@@ -13,10 +13,36 @@ class Home extends Component {
     this.handlePost = this.handlePost.bind(this);
     this.loadNewMemo = this.loadNewMemo.bind(this);
     this.loadOldMemo = this.loadOldMemo.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
 
     this.state = {
       loadingState: false
     }
+  }
+
+  handleEdit(id, index, contents) {
+    return this.props.memoEditRequest(id, index, contents).then(() => {
+      if(this.props.editStatus.status === 'SUCCESS'){
+        Materialize.toast('Success!', 2000)
+      } else {
+        let errorMessage = [
+          'something broke',
+          'please write something',
+          'you are not logged in',
+          'that memo does not exist anymore',
+          'you do not have permission'
+        ]
+
+        let error  = this.props.editStatus.error;
+
+        let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[error - 1] + '</span>');
+        Materialize.toast($toastContent, 2000);
+
+        if (error === 3) {
+          setTimeout(() => {window.location.reload(false)},2000)
+        }
+      }
+    })
   }
 
   componentDidMount() {
@@ -62,7 +88,7 @@ class Home extends Component {
       loadUntilScrollable();
       loadMemoLoop();
     })
-    
+
   }
 
   componentWillUnmount() {
@@ -153,6 +179,7 @@ class Home extends Component {
         <MemoList
           data={this.props.memoData}
           currentUser={this.props.currentUser}
+          onEdit={this.handleEdit}
         />
       </div>
     );
@@ -167,7 +194,8 @@ const mapStateToProps = state => {
     currentUser: state.authentication.status.currentUser,
     memoData: state.memo.list.data,
     listStatus: state.memo.list.status,
-    isLast: state.memo.list.isLast
+    isLast: state.memo.list.isLast,
+    editStatus: state.memo.edit
   };
 };
 
@@ -178,6 +206,9 @@ const mapDispatchToProps = dispatch => {
     },
     memoListRequest: (isInitial, listType, id, username) => {
       return dispatch(memoListRequest(isInitial, listType, id, username));
+    },
+    memoEditRequest: (id, index, contents) => {
+      return dispatch(memoEditRequest(id, index, contents))
     }
   };
 };

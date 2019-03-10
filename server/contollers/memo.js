@@ -43,8 +43,10 @@ router.put('/:id', (req, res) => {
   const contents = req.body.contents;
   const loginInfo = req.session.loginInfo;
 
+  console.log(id, contents, loginInfo)
+
   // check memo id valid
-  if (mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
       error: 'invalid id',
       code: 1
