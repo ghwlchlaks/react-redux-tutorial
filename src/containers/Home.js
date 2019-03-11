@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Write, MemoList } from '../components';
-import { memoPostRequest, memoListRequest, memoEditRequest } from '../actions/memo';
+import {
+  memoPostRequest,
+  memoListRequest,
+  memoEditRequest,
+  memoRemoveRequest
+} from '../actions/memo';
 
 const $ = window.$;
 const Materialize = window.Materialize;
@@ -14,16 +19,50 @@ class Home extends Component {
     this.loadNewMemo = this.loadNewMemo.bind(this);
     this.loadOldMemo = this.loadOldMemo.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
 
     this.state = {
       loadingState: false
-    }
+    };
+  }
+
+  handleRemove(id, index) {
+    this.props.memoRemoveRequest(id, index).then(() => {
+      if (this.props.removeStatus.status === 'SUCCESS') {
+        setTimeout(() => {
+          if ($('body').height() < $(window).height()) {
+            this.loadOldMemo();
+          }
+        }, 1000);
+      } else {
+        let errorMessage = [
+          'something broke',
+          'you are not logged in',
+          'that memo does not exist',
+          'you do not have permission'
+        ];
+
+        let $toastContent = $(
+          '<span style="color: #FFB4BA">' +
+            errorMessage[this.props.removeStatus.error - 1] +
+            '</span>'
+        );
+        Materialize.toast($toastContent, 2000);
+
+        // if not logged in
+        if (this.props.removeStatus.error === 2) {
+          setTimeout(() => {
+            window.location.reload(false);
+          }, 2000);
+        }
+      }
+    });
   }
 
   handleEdit(id, index, contents) {
     return this.props.memoEditRequest(id, index, contents).then(() => {
-      if(this.props.editStatus.status === 'SUCCESS'){
-        Materialize.toast('Success!', 2000)
+      if (this.props.editStatus.status === 'SUCCESS') {
+        Materialize.toast('Success!', 2000);
       } else {
         let errorMessage = [
           'something broke',
@@ -31,18 +70,22 @@ class Home extends Component {
           'you are not logged in',
           'that memo does not exist anymore',
           'you do not have permission'
-        ]
+        ];
 
-        let error  = this.props.editStatus.error;
+        let error = this.props.editStatus.error;
 
-        let $toastContent = $('<span style="color: #FFB4BA">' + errorMessage[error - 1] + '</span>');
+        let $toastContent = $(
+          '<span style="color: #FFB4BA">' + errorMessage[error - 1] + '</span>'
+        );
         Materialize.toast($toastContent, 2000);
 
         if (error === 3) {
-          setTimeout(() => {window.location.reload(false)},2000)
+          setTimeout(() => {
+            window.location.reload(false);
+          }, 2000);
         }
       }
-    })
+    });
   }
 
   componentDidMount() {
@@ -58,37 +101,39 @@ class Home extends Component {
     });
 
     $(window).scroll(() => {
-      if ($(document).height() - $(window).height() - $(window).scrollTop() < 250) {
+      if (
+        $(document).height() - $(window).height() - $(window).scrollTop() <
+        250
+      ) {
         if (!this.state.loadingState) {
           this.loadOldMemo();
           this.setState({
             loadingState: true
-          })
+          });
         }
       } else {
         if (this.state.loadingState) {
           this.setState({
             loadingState: false
-          })
+          });
         }
       }
-    })
+    });
 
     const loadUntilScrollable = () => {
-      if($('body').height() < $(window).height()) {
+      if ($('body').height() < $(window).height()) {
         this.loadOldMemo().then(() => {
           if (!this.props.isLast) {
-            loadUntilScrollable()
+            loadUntilScrollable();
           }
-        })
+        });
       }
-    }
+    };
 
     this.props.memoListRequest(true).then(() => {
       loadUntilScrollable();
       loadMemoLoop();
-    })
-
+    });
   }
 
   componentWillUnmount() {
@@ -97,19 +142,19 @@ class Home extends Component {
   }
 
   loadOldMemo() {
-    if(this.props.isLast) {
+    if (this.props.isLast) {
       return new Promise((resolve, reject) => {
         resolve();
-      })
+      });
     }
 
     let lastId = this.props.memoData[this.props.memoData.length - 1]._id;
 
     return this.props.memoListRequest(false, 'old', lastId).then(() => {
-      if(this.props.isLast) {
-        Materialize.toast('you are reading the last page', 2000)
+      if (this.props.isLast) {
+        Materialize.toast('you are reading the last page', 2000);
       }
-    })
+    });
   }
 
   loadNewMemo() {
@@ -136,7 +181,7 @@ class Home extends Component {
         // tigger new memo
         this.loadNewMemo().then(() => {
           Materialize.toast('Success!', 2000);
-        })
+        });
       } else {
         /**
          * 1: not logged in
@@ -180,6 +225,7 @@ class Home extends Component {
           data={this.props.memoData}
           currentUser={this.props.currentUser}
           onEdit={this.handleEdit}
+          onRemove={this.handleRemove}
         />
       </div>
     );
@@ -195,7 +241,8 @@ const mapStateToProps = state => {
     memoData: state.memo.list.data,
     listStatus: state.memo.list.status,
     isLast: state.memo.list.isLast,
-    editStatus: state.memo.edit
+    editStatus: state.memo.edit,
+    removeStatus: state.memo.remove
   };
 };
 
@@ -208,7 +255,10 @@ const mapDispatchToProps = dispatch => {
       return dispatch(memoListRequest(isInitial, listType, id, username));
     },
     memoEditRequest: (id, index, contents) => {
-      return dispatch(memoEditRequest(id, index, contents))
+      return dispatch(memoEditRequest(id, index, contents));
+    },
+    memoRemoveRequest: (id, index) => {
+      return dispatch(memoRemoveRequest(id, index));
     }
   };
 };

@@ -10,34 +10,40 @@ export default class Memo extends Component {
     this.state = {
       editMode: false,
       value: props.data.contents
-    }
+    };
 
     this.handleChange = this.handleChange.bind(this);
     this.toggleEdit = this.toggleEdit.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
+  }
+
+  handleRemove() {
+    let id = this.props.data._id;
+    let index = this.props.index;
+    this.props.onRemove(id, index);
   }
 
   handleChange(e) {
     this.setState({
       value: e.target.value
-    })
+    });
   }
 
   toggleEdit() {
-
-    if(this.state.editMode) {
-      let id =this.props.data._id;
-      let index= this.props.index;
+    if (this.state.editMode) {
+      let id = this.props.data._id;
+      let index = this.props.index;
       let contents = this.state.value;
 
       this.props.onEdit(id, index, contents).then(() => {
         this.setState({
           editMode: !this.state.editMode
-        })
-      })
+        });
+      });
     } else {
       this.setState({
         editMode: !this.state.editMode
-      })
+      });
     }
   }
 
@@ -56,8 +62,11 @@ export default class Memo extends Component {
     const { data, ownership } = this.props;
 
     const editedInfo = (
-      <span style={{color: '#AAB5BC'}}> · Edited <TimeAgo date={this.props.data.date.edited} live={true}/></span>
-    )
+      <span style={{ color: '#AAB5BC' }}>
+        {' '}
+        · Edited <TimeAgo date={this.props.data.date.edited} live={true} />
+      </span>
+    );
 
     const dropDownMenu = (
       <div className="option-button">
@@ -73,7 +82,7 @@ export default class Memo extends Component {
             <a onClick={this.toggleEdit}>Edit</a>
           </li>
           <li>
-            <a>Remove</a>
+            <a onClick={this.handleRemove}>Remove</a>
           </li>
         </ul>
       </div>
@@ -91,19 +100,20 @@ export default class Memo extends Component {
 
     const editView = (
       <div className="write">
-      <div className="card">
+        <div className="card">
           <div className="card-content">
-              <textarea
-                  className="materialize-textarea"
-                  value={this.state.value}
-                  onChange={this.handleChange}></textarea>
+            <textarea
+              className="materialize-textarea"
+              value={this.state.value}
+              onChange={this.handleChange}
+            />
           </div>
           <div className="card-action">
-              <a onClick={this.toggleEdit}>OK</a>
+            <a onClick={this.toggleEdit}>OK</a>
           </div>
+        </div>
       </div>
-  </div>
-    )
+    );
 
     return (
       <div className="container memo">
@@ -126,7 +136,8 @@ Memo.propTypes = {
   data: PropTypes.object,
   ownership: PropTypes.bool,
   onEdit: PropTypes.func,
-  index: PropTypes.number
+  index: PropTypes.number,
+  onRemove: PropTypes.func
 };
 
 Memo.defaultProps = {
@@ -143,7 +154,10 @@ Memo.defaultProps = {
   },
   ownership: true,
   onEdit: (id, index, contents) => {
-    console.error('onEdit function not defined')
+    console.error('onEdit function not defined');
   },
-  index: -1
+  index: -1,
+  onRemove: (id, index) => {
+    console.error('onRemove function not defined');
+  }
 };
