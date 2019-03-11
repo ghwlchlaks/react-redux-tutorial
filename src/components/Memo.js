@@ -15,6 +15,13 @@ export default class Memo extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.toggleEdit = this.toggleEdit.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
+    this.handleStar = this.handleStar.bind(this);
+  }
+
+  handleStar() {
+    let id = this.props.data._id;
+    let index = this.props.index;
+    this.props.onStar(id, index);
   }
 
   handleRemove() {
@@ -60,6 +67,11 @@ export default class Memo extends Component {
   }
   render() {
     const { data, ownership } = this.props;
+
+    let starStyle =
+      this.props.data.starred.indexOf(this.props.currentUser) > -1
+        ? { color: '#ff9980' }
+        : {};
 
     const editedInfo = (
       <span style={{ color: '#AAB5BC' }}>
@@ -121,7 +133,11 @@ export default class Memo extends Component {
           {this.state.editMode ? editView : memoView}
           <div className="card-content">{data.contents}</div>
           <div className="footer">
-            <i className="material-icons log-footer-icon star icon-button">
+            <i
+              className="material-icons log-footer-icon star icon-button"
+              style={starStyle}
+              onClick={this.handleStar}
+            >
               star
             </i>
             <span className="star-count">{data.starred.length}</span>
@@ -137,7 +153,10 @@ Memo.propTypes = {
   ownership: PropTypes.bool,
   onEdit: PropTypes.func,
   index: PropTypes.number,
-  onRemove: PropTypes.func
+  onRemove: PropTypes.func,
+  onStar: PropTypes.func,
+  starStatus: PropTypes.object,
+  currentUser: PropTypes.string
 };
 
 Memo.defaultProps = {
@@ -159,5 +178,10 @@ Memo.defaultProps = {
   index: -1,
   onRemove: (id, index) => {
     console.error('onRemove function not defined');
-  }
+  },
+  onStar: (id, index) => {
+    console.error('onStar function not defined ');
+  },
+  starStatus: {},
+  currentUser: ''
 };

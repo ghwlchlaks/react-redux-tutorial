@@ -41,10 +41,10 @@ router.post('/:id', (req, res) => {
 
     if (!hasStarred) {
       // star누른적이없는 유저라면 배열에 추가
-      memo.starred.push(username);
+      memo.starred.push(loginInfo.username);
     } else {
       // 누른적이 있는 유저라면 배열에서 제거
-      memo.starred.splice(index, i);
+      memo.starred.splice(index, 1);
     }
 
     //save
