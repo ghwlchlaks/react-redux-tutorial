@@ -43,7 +43,7 @@ router.put('/:id', (req, res) => {
   const contents = req.body.contents;
   const loginInfo = req.session.loginInfo;
 
-  console.log(id, contents, loginInfo)
+  console.log(id, contents, loginInfo);
 
   // check memo id valid
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -156,31 +156,46 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:listType/:id', (req, res) => {
-  let listType = req.params.listType;
-  let id = req.params.id;
+// 특정 유저의 메모 가져오기
+router.get('/:username', (req, res) => {
+  const username = req.params.username;
+
+  Memo.find({ writer: username })
+    .sort({ _id: -1 })
+    .limit(6)
+    .exec((err, memos) => {
+      if (err) throw err;
+      res.json(memos);
+    });
+});
+
+// 유저의이름 old, new 가져오기
+router.get('/:username/:listType/:id', (req, res) => {
+  const listType = req.params.listType;
+  const id = req.params.id;
+  const username = req.params.username;
 
   // check list type valid
   if (listType !== 'old' && listType !== 'new') {
     return res.status(400).send({
-      error: 'invalid listtype',
+      error: 'invalid listType',
       code: 1
     });
   }
 
-  // check memo id vaild
+  // check memo id valid
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
-      error: 'invaild id',
+      error: 'invalid id',
       code: 2
     });
   }
 
-  let objId = new mongoose.Types.ObjectId(id);
+  const objId = new mongoose.Types.ObjectId(id);
 
   if (listType === 'new') {
     // get new memo
-    Memo.find({ _id: { $gt: objId } })
+    Memo.find({ writer: username, _id: { $gt: objId } })
       .sort({ _id: -1 })
       .limit(6)
       .exec((err, memos) => {
@@ -189,7 +204,7 @@ router.get('/:listType/:id', (req, res) => {
       });
   } else {
     // get older memo
-    Memo.find({ _id: { $lt: objId } })
+    Memo.find({ writer: username, _id: { $lt: objId } })
       .sort({ _id: -1 })
       .limit(6)
       .exec((err, memos) => {
@@ -198,5 +213,4 @@ router.get('/:listType/:id', (req, res) => {
       });
   }
 });
-
 module.exports = router;
