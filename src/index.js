@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import { Route, BrowserRouter } from 'react-router-dom';
 
 // container(route) components
-import { Home, Register, Login } from './containers';
+import { Home, Register, Login, Wall } from './containers';
 
 // Redux
 import { Provider } from 'react-redux';
@@ -29,6 +29,7 @@ ReactDOM.render(
         <Route path="/home" component={Home} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
+        <Route path="/wall/:username" component={Wall} />
       </div>
     </BrowserRouter>
   </Provider>,

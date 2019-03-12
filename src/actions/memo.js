@@ -63,6 +63,9 @@ export function memoListRequest(isInitial, listType, id, username) {
       url = isInitial ? url : `${url}/${listType}/${id}`;
     } else {
       // 특정 유저의 메모 가져오기 url
+      url = isInitial
+        ? `${url}/${username}`
+        : `${url}/${username}/${listType}/${id}`;
     }
 
     return axios

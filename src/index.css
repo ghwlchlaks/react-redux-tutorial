@@ -233,3 +233,15 @@ a {
   -webkit-animation-name: memo-leave;
   animation-name: memo-leave;
 }
+
+/* wall header style */
+.empty-page {
+  font-size: 30px;
+  text-align: center;
+  color: #4d4d4d;
+}
+
+.wall-info {
+  font-size: 30px;
+  text-align: center;
+}
