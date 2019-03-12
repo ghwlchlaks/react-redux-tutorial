@@ -119,4 +119,23 @@ router.post('/logout', (req, res) => {
   });
 });
 
+// 유저 검색
+router.get('/search/:username', (req, res) => {
+  const username = req.params.username;
+  const re = new RegExp('^' + username);
+
+  User.find({ username: { $regex: re } }, { _id: false, username: true })
+    .limit(5)
+    .sort({ username: 1 })
+    .exec((err, users) => {
+      if (err) throw err;
+      res.json(users);
+    });
+});
+
+// empty username search
+router.get('/search', (req, res) => {
+  res.json({});
+});
+
 module.exports = router;
