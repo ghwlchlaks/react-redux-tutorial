@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export default class Search extends Component {
@@ -38,7 +37,9 @@ export default class Search extends Component {
     this.handleSearch(e.target.value);
   }
 
-  handleSearch(keyword) {}
+  handleSearch(keyword) {
+    this.props.onSearch(keyword);
+  }
 
   handleKeyDown(e) {
     if (e.keyCode === 13) {
@@ -50,7 +51,11 @@ export default class Search extends Component {
   }
 
   render() {
-    const mapDataToLinks = data => {};
+    const mapDataToLinks = users => {
+      return users.map((user, i) => {
+        return <li key={i}>{user.username}</li>;
+      });
+    };
 
     return (
       <div className="search-screen white-text">
@@ -81,7 +86,7 @@ export default class Search extends Component {
 Search.propTypes = {
   onClose: PropTypes.func,
   onSearch: PropTypes.func,
-  username: PropTypes.array
+  usernames: PropTypes.array
 };
 
 Search.defaultProps = {
@@ -91,5 +96,5 @@ Search.defaultProps = {
   onSearch: () => {
     console.error('onSearch function not defined');
   },
-  username: {}
+  usernames: []
 };

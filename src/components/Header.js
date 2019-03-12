@@ -66,7 +66,11 @@ export default class Header extends Component {
         >
           {/* IMPLEMENT: SHOW SEARCH WHEN SEARCH STATUS IS TRUE */}
           {this.state.search ? (
-            <Search onClose={this.toggleSearch} />
+            <Search
+              onClose={this.toggleSearch}
+              onSearch={this.props.onSearch}
+              usernames={this.props.usernames}
+            />
           ) : (
             undefined
           )}

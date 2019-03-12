@@ -135,7 +135,7 @@ router.get('/search/:username', (req, res) => {
 
 // empty username search
 router.get('/search', (req, res) => {
-  res.json({});
+  res.json([]);
 });
 
 module.exports = router;

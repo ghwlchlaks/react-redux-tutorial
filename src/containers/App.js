@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Header } from '../components';
 import { connect } from 'react-redux';
+import { searchRequest } from '../actions/search';
 import { getStatusRequest, logoutRequest } from '../actions/authentication';
 const $ = window.$;
 const Materialize = window.Materialize;
@@ -10,6 +11,12 @@ class App extends Component {
     super(props);
 
     this.handleLogout = this.handleLogout.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
+  }
+  handleSearch(username) {
+    this.props.searchRequest(username).then(() => {
+      //console.log('app.js handle search ', this.props.usernames);
+    });
   }
 
   handleLogout() {
@@ -56,8 +63,6 @@ class App extends Component {
     }
 
     this.props.getStatusRequest().then(() => {
-      // console.log(this.props.status);
-
       // 서버 세션 검사 결과 false일때
       if (!this.props.status.valid) {
         // 쿠키 제거
@@ -88,6 +93,8 @@ class App extends Component {
           <Header
             isLoggedIn={this.props.status.isLoggedIn}
             onLogout={this.handleLogout}
+            onSearch={this.handleSearch}
+            usernames={this.props.usernames}
           />
         )}
         {this.props.children}
@@ -98,7 +105,8 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    status: state.authentication.status
+    status: state.authentication.status,
+    usernames: state.search.search.usernames
   };
 };
 
@@ -109,6 +117,9 @@ const mapDispatchToProps = dispatch => {
     },
     logoutRequest: () => {
       return dispatch(logoutRequest());
+    },
+    searchRequest: username => {
+      return dispatch(searchRequest(username));
     }
   };
 };
